@@ -51,19 +51,28 @@ class App(object):
         if not excluded_amis:
             fetch_instances = set(f.fetch_instances())
             fetch_unattached_lc = set(f.fetch_unattached_lc())
-            fetch_zeroed_asg = set(f.fetch_zeroed_asg())
+            fetch_unattached_lt = set(f.fetch_unattached_lt())
+            fetch_zeroed_asg_lc = set(f.fetch_zeroed_asg_lc())
+            fetch_zeroed_asg_lt = set(f.fetch_zeroed_asg_lt())
 
             if self.full_report:
                 Printer.print_ami_ids_group("Excluded from not terminated EC2 instances",
                                             available_amis, fetch_instances)
                 Printer.print_ami_ids_group("Excluded from launch configurations",
                                             available_amis, fetch_unattached_lc)
-                Printer.print_ami_ids_group("Excluded from autoscaling groups with 0 capacity",
-                                            available_amis, fetch_zeroed_asg)
+                Printer.print_ami_ids_group("Excluded from launch templates",
+                                            available_amis, fetch_unattached_lt)
+                Printer.print_ami_ids_group("Excluded from launch configurations in autoscaling groups with 0 capacity",
+                                            available_amis, fetch_zeroed_asg_lc)
+                Printer.print_ami_ids_group("Excluded from launch templates in autoscaling groups with 0 capacity",
+                                            available_amis, fetch_zeroed_asg_lt)                                
 
-            excluded_amis += fetch_unattached_lc
-            excluded_amis += fetch_zeroed_asg
+            
             excluded_amis += fetch_instances
+            excluded_amis += fetch_unattached_lc
+            excluded_amis += fetch_unattached_lt
+            excluded_amis += fetch_zeroed_asg_lc
+            excluded_amis += fetch_zeroed_asg_lt
 
         candidates = [v
                       for k, v
@@ -71,7 +80,7 @@ class App(object):
                       if k not in excluded_amis]
         return candidates
 
-    def prepare_candidates(self, candidates_amis=None):
+    def prepare_candidates(self, candidates_amis=None)
 
         """ From an AMI list apply mapping strategy and filters """
 
