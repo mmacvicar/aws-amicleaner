@@ -54,6 +54,7 @@ class App(object):
             fetch_unattached_lt = set(f.fetch_unattached_lt())
             fetch_zeroed_asg_lc = set(f.fetch_zeroed_asg_lc())
             fetch_zeroed_asg_lt = set(f.fetch_zeroed_asg_lt())
+            fetch_default_lt = set(f.fetch_default_lt())
 
             if self.full_report:
                 Printer.print_ami_ids_group("Excluded from not terminated EC2 instances",
@@ -66,14 +67,16 @@ class App(object):
                                             available_amis, fetch_zeroed_asg_lc)
                 Printer.print_ami_ids_group("Excluded from launch templates in autoscaling groups with 0 capacity",
                                             available_amis, fetch_zeroed_asg_lt)                                
-
+                Printer.print_ami_ids_group("Excluded from launch target's default version",
+                                            available_amis, fetch_zeroed_asg_lt)   
             
             excluded_amis += fetch_instances
             excluded_amis += fetch_unattached_lc
             excluded_amis += fetch_unattached_lt
             excluded_amis += fetch_zeroed_asg_lc
             excluded_amis += fetch_zeroed_asg_lt
-
+            excluded_amis += fetch_default_lt
+            
         candidates = [v
                       for k, v
                       in available_amis.items()

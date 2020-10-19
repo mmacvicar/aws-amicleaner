@@ -139,6 +139,30 @@ class Fetcher(object):
                         for lt_latest_version in resp.get("LaunchTemplateVersions", []))
 
         return amis
+    
+    def fetch_default_lt(self):
+
+        """
+        Find AMIs that are in a launch target's default version
+        """
+
+        next_token = ''
+        launch_template_default_versions = []
+        while next_token is not None:
+            resp = self.ec2.describe_launch_template_versions(
+                Versions=[
+                    '$Default'
+                ]
+            )
+            launch_template_default_versions += resp['LaunchTemplateVersions']
+
+            next_token = resp.get('NextToken')
+
+        amis = [x['LaunchTemplateData']['ImageId'] 
+                for x in launch_template_default_versions 
+                if 'ImageId' in x['LaunchTemplateData']]
+
+        return amis
 
     def fetch_instances(self):
 
