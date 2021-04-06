@@ -202,7 +202,9 @@ def test_reduce_without_rotation_number():
     # creating amis to drop dict
     candidates = [second_ami, third_ami, first_ami]
 
-    assert AMICleaner().reduce_candidates(candidates) == candidates
+    reduced, keep_previous, keep_min_day = AMICleaner().reduce_candidates(candidates)
+
+    assert reduced == candidates and not keep_previous and not keep_min_day
 
 
 def test_reduce_without_snapshot_id():
@@ -219,7 +221,9 @@ def test_reduce_without_snapshot_id():
     # creating amis to drop dict
     candidates = [first_ami]
 
-    assert AMICleaner().reduce_candidates(candidates) == candidates
+    reduced, keep_previous, keep_min_day = AMICleaner().reduce_candidates(candidates)
+
+    assert reduced == candidates and not keep_previous and not keep_min_day
 
 
 def test_reduce():
@@ -245,20 +249,26 @@ def test_reduce():
     candidates = [second_ami, third_ami, first_ami]
     rotation_number = 2
     cleaner = AMICleaner()
-    left = cleaner.reduce_candidates(candidates, rotation_number)
+    left, keep_previous, keep_min_day = cleaner.reduce_candidates(candidates, rotation_number)
     assert len(left) == 1
+    assert len(keep_previous) == 2
+    assert len(keep_min_day) == 0
     assert left[0].id == first_ami.id
 
     # keep 1 recent ami
     rotation_number = 1
-    left = cleaner.reduce_candidates(candidates, rotation_number)
+    left, keep_previous, keep_min_day = cleaner.reduce_candidates(candidates, rotation_number)
     assert len(left) == 2
+    assert len(keep_previous) == 2
+    assert len(keep_min_day) == 0
     assert left[0].id == second_ami.id
 
     # keep 5 recent amis
     rotation_number = 5
-    left = cleaner.reduce_candidates(candidates, rotation_number)
+    left, keep_previous, keep_min_day = cleaner.reduce_candidates(candidates, rotation_number)
     assert len(left) == 0
+    assert len(keep_previous) == 2
+    assert len(keep_min_day) == 0
 
 
 def test_remove_ami_from_none():

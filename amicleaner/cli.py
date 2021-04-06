@@ -96,10 +96,16 @@ class App(object):
             if not group_name:
                 report["no-tags (excluded)"] = amis
             else:
-                reduced = c.reduce_candidates(amis, self.keep_previous, self.ami_min_days)
+                reduced, keep_previous, keep_min_day = c.reduce_candidates(amis, self.keep_previous, self.ami_min_days)
                 if reduced:
                     report[group_name] = reduced
                     candidates.extend(reduced)
+
+                if keep_previous:
+                    report[f"Excluded {group_name} (by keep previous)"] = keep_previous
+
+                if keep_min_day:
+                    report[f"Excluded {group_name} (by min day)"] = keep_min_day
 
         Printer.print_report(report, self.full_report)
 

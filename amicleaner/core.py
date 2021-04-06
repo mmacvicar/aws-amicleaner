@@ -248,6 +248,9 @@ class AMICleaner(object):
         result_amis = []
         result_amis.extend(mapped_candidates_ami)
 
+        keep_previous_amis = []
+        keep_min_days_amis = []
+
         if ami_min_days > 0:
             for ami in mapped_candidates_ami:
                 f_date = datetime.strptime(ami.creation_date, '%Y-%m-%dT%H:%M:%S.%fZ')
@@ -255,19 +258,20 @@ class AMICleaner(object):
                 delta = present - f_date
                 if delta.days < ami_min_days:
                     result_amis.remove(ami)
-
-        mapped_candidates_ami = result_amis
+                    keep_min_days_amis.append(ami)
 
         if not keep_previous:
-            return mapped_candidates_ami
+            return result_amis, keep_previous_amis, keep_min_days_amis
 
-        if not mapped_candidates_ami:
-            return mapped_candidates_ami
+        if not result_amis:
+            return result_amis, keep_previous_amis, keep_min_days_amis
 
         amis = sorted(
-            mapped_candidates_ami,
+            result_amis,
             key=self.get_ami_sorting_key,
             reverse=True
         )
 
-        return amis[keep_previous:]
+        keep_previous_amis = amis[:keep_previous]
+
+        return amis[keep_previous:], keep_previous_amis, keep_min_days_amis
