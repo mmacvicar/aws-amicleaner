@@ -49,9 +49,18 @@ class App(object):
         excluded_amis = excluded_amis or []
 
         if not excluded_amis:
-            excluded_amis += f.fetch_unattached_lc()
-            excluded_amis += f.fetch_zeroed_asg()
-            excluded_amis += f.fetch_instances()
+            fetch_instances = set(f.fetch_instances())
+            fetch_unattached_lc = set(f.fetch_unattached_lc())
+            fetch_zeroed_asg = set(f.fetch_zeroed_asg())
+
+            if self.full_report:
+                Printer.print_ami_ids_group("From not terminated EC2 instances", fetch_instances)
+                Printer.print_ami_ids_group("From launch configurations", fetch_unattached_lc)
+                Printer.print_ami_ids_group("From autoscaling groups with 0 capacity", fetch_zeroed_asg)
+
+            excluded_amis += fetch_unattached_lc
+            excluded_amis += fetch_zeroed_asg
+            excluded_amis += fetch_instances
 
         candidates = [v
                       for k, v

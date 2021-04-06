@@ -13,6 +13,18 @@ from .resources.config import KEEP_PREVIOUS, AMI_MIN_DAYS
 
 class Printer(object):
 
+    @staticmethod
+    def print_ami_ids_group(group_name, ami_ids):
+        groups_table = PrettyTable(["ami_id"])
+        for ami_id in ami_ids:
+            groups_table.add_row([
+                ami_id
+            ])
+
+        print("\n", group_name)
+        print(groups_table.get_string(sortby="ami_id"))
+
+
     """ Pretty table prints methods """
     @staticmethod
     def print_report(candidates, full_report=False):
