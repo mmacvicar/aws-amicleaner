@@ -94,7 +94,7 @@ class App(object):
             group_name = group_name or ""
 
             if not group_name:
-                report["no-tags (excluded)"] = amis
+                report["Excluded (by mapping strategy)"] = amis
             else:
                 reduced, keep_previous, keep_min_day = c.reduce_candidates(amis, self.keep_previous, self.ami_min_days)
                 if reduced:
