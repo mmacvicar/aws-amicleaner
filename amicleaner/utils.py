@@ -39,13 +39,14 @@ class Printer(object):
         for group_name, amis in candidates.items():
             groups_table.add_row([group_name, len(amis)])
             eligible_amis_table = PrettyTable(
-                ["AMI ID", "AMI Name", "Creation Date"]
+                ["AMI ID", "AMI Name", "Creation Date", "Tags"]
             )
             for ami in amis:
                 eligible_amis_table.add_row([
                     ami.id,
                     ami.name,
-                    ami.creation_date
+                    ami.creation_date,
+                    Printer.tags_to_string(ami.tags)
                 ])
             if full_report:
                 print(group_name)
@@ -71,6 +72,17 @@ class Printer(object):
         for snap in snapshots:
             snap_table.add_row([snap])
         print(snap_table)
+
+    @staticmethod
+    def tags_to_string(tags):
+        if tags is None:
+            return ""
+
+        tag_values = []
+        for tag in tags:
+            tag_values.append(f"{tag.key} => {tag.value}")
+
+        return "; ".join(sorted(tag_values))
 
 
 def parse_args(args):
