@@ -154,6 +154,7 @@ class App(object):
 
         if self.check_orphans:
             self.clean_orphans()
+            return
 
         if self.from_ids:
             self.prepare_delete_amis(self.from_ids, from_ids=True)
