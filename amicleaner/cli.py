@@ -54,9 +54,12 @@ class App(object):
             fetch_zeroed_asg = set(f.fetch_zeroed_asg())
 
             if self.full_report:
-                Printer.print_ami_ids_group("From not terminated EC2 instances", fetch_instances)
-                Printer.print_ami_ids_group("From launch configurations", fetch_unattached_lc)
-                Printer.print_ami_ids_group("From autoscaling groups with 0 capacity", fetch_zeroed_asg)
+                Printer.print_ami_ids_group("Excluded from not terminated EC2 instances",
+                                            available_amis, fetch_instances)
+                Printer.print_ami_ids_group("Excluded from launch configurations",
+                                            available_amis, fetch_unattached_lc)
+                Printer.print_ami_ids_group("Excluded from autoscaling groups with 0 capacity",
+                                            available_amis, fetch_zeroed_asg)
 
             excluded_amis += fetch_unattached_lc
             excluded_amis += fetch_zeroed_asg

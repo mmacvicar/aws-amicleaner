@@ -14,16 +14,27 @@ from .resources.config import KEEP_PREVIOUS, AMI_MIN_DAYS
 class Printer(object):
 
     @staticmethod
-    def print_ami_ids_group(group_name, ami_ids):
-        groups_table = PrettyTable(["ami_id"])
+    def print_ami_ids_group(group_name, amis_dict, ami_ids):
+        filtered_amis = []
+        additional_amis_ids = []
+
         for ami_id in ami_ids:
-            groups_table.add_row([
-                ami_id
-            ])
+            ami = amis_dict.get(ami_id)
+            if ami:
+                filtered_amis.append(ami)
+            else:
+                additional_amis_ids.append(ami_id)
 
-        print("\n", group_name)
-        print(groups_table.get_string(sortby="ami_id"))
+        Printer._print_ami_ids_group(group_name, filtered_amis)
+        if additional_amis_ids:
+            print(group_name, "(other ids)")
+            groups_table = PrettyTable(["AMI ID"])
+            for ami_id in additional_amis_ids:
+                groups_table.add_row([
+                    ami_id
+                ])
 
+            print(groups_table.get_string(sortby="AMI ID"), "\n\n")
 
     """ Pretty table prints methods """
     @staticmethod
@@ -38,22 +49,32 @@ class Printer(object):
 
         for group_name, amis in candidates.items():
             groups_table.add_row([group_name, len(amis)])
-            eligible_amis_table = PrettyTable(
-                ["AMI ID", "AMI Name", "Creation Date", "Tags"]
-            )
-            for ami in amis:
-                eligible_amis_table.add_row([
-                    ami.id,
-                    ami.name,
-                    ami.creation_date,
-                    Printer.tags_to_string(ami.tags)
-                ])
             if full_report:
-                print(group_name)
-                print(eligible_amis_table.get_string(sortby="AMI Name"), "\n\n")
+                Printer._print_ami_ids_group(group_name, amis)
 
         print("\nAMIs to be removed:")
         print(groups_table.get_string(sortby="Group name"))
+
+    @staticmethod
+    def _print_ami_ids_group(group_name, amis):
+        amis_table = Printer._prepare_ami_table(amis)
+        print(group_name)
+        print(amis_table.get_string(sortby="Creation Date"), "\n\n")
+
+    @staticmethod
+    def _prepare_ami_table(amis):
+        eligible_amis_table = PrettyTable(
+            ["AMI ID", "AMI Name", "Creation Date", "Tags"]
+        )
+        for ami in amis:
+            eligible_amis_table.add_row([
+                ami.id,
+                ami.name,
+                ami.creation_date,
+                Printer.tags_to_string(ami.tags)
+            ])
+
+        return eligible_amis_table
 
     @staticmethod
     def print_failed_snapshots(snapshots):
