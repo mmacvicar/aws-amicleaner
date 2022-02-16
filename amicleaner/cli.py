@@ -55,6 +55,7 @@ class App(object):
             fetch_zeroed_asg_lc = set(f.fetch_zeroed_asg_lc())
             fetch_zeroed_asg_lt = set(f.fetch_zeroed_asg_lt())
             fetch_default_lt = set(f.fetch_default_lt())
+            fetch_aws_backup = set(f.fetch_aws_backup())
 
             if self.full_report:
                 Printer.print_ami_ids_group("Excluded from not terminated EC2 instances",
@@ -69,13 +70,16 @@ class App(object):
                                             available_amis, fetch_zeroed_asg_lt)                                
                 Printer.print_ami_ids_group("Excluded from launch target's default version",
                                             available_amis, fetch_zeroed_asg_lt)   
-            
+                Printer.print_ami_ids_group("Excluded from AWS Backup",
+                                            available_amis, fetch_aws_backup) 
+                            
             excluded_amis += fetch_instances
             excluded_amis += fetch_unattached_lc
             excluded_amis += fetch_unattached_lt
             excluded_amis += fetch_zeroed_asg_lc
             excluded_amis += fetch_zeroed_asg_lt
             excluded_amis += fetch_default_lt
+            excluded_amis += fetch_aws_backup
             
         candidates = [v
                       for k, v

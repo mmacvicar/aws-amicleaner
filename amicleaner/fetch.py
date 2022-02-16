@@ -164,6 +164,21 @@ class Fetcher(object):
 
         return amis
 
+    def fetch_aws_backup(self):
+
+        """
+        Find AMIs that were created by AWS Backup
+        """
+
+        my_images = self.ec2.describe_images(Owners=['self']).get('Images')
+
+        ami_ids = []
+        for image in my_images:
+            if image['Name'].startswith('AwsBackup'):
+                ami_ids.append(image['ImageId'])
+
+        return ami_ids
+
     def fetch_instances(self):
 
         """ Find AMIs for not terminated EC2 instances """
