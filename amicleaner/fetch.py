@@ -4,7 +4,6 @@
 from __future__ import absolute_import
 from builtins import object
 import boto3
-from botocore.config import Config
 from .resources.config import BOTO3_RETRIES
 from .resources.models import AMI
 
@@ -13,11 +12,11 @@ class Fetcher(object):
 
     """ Fetches function for AMI candidates to deletion """
 
-    def __init__(self, ec2=None, autoscaling=None):
+    def __init__(self, ec2=None, autoscaling=None, config=None):
 
         """ Initializes aws sdk clients """
 
-        self.ec2 = ec2 or boto3.client('ec2', config=Config(retries={'max_attempts': BOTO3_RETRIES}))
+        self.ec2 = ec2 or boto3.client('ec2', config=config)
         self.asg = autoscaling or boto3.client('autoscaling')
 
     def fetch_available_amis(self):

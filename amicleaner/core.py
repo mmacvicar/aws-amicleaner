@@ -6,7 +6,6 @@ from __future__ import absolute_import
 from builtins import object
 import boto3
 from botocore.exceptions import ClientError
-from botocore.config import Config
 
 from .resources.config import BOTO3_RETRIES
 from .resources.models import AMI
@@ -18,8 +17,8 @@ class OrphanSnapshotCleaner(object):
 
     """ Finds and removes ebs snapshots left orphaned """
 
-    def __init__(self, ec2=None):
-        self.ec2 = ec2 or boto3.client('ec2', config=Config(retries={'max_attempts': BOTO3_RETRIES}))
+    def __init__(self, ec2=None, config=None):
+        self.ec2 = ec2 or boto3.client('ec2', config=config)
 
     def get_snapshots_filter(self):
 
@@ -95,8 +94,8 @@ class OrphanSnapshotCleaner(object):
 
 class AMICleaner(object):
 
-    def __init__(self, ec2=None):
-        self.ec2 = ec2 or boto3.client('ec2', config=Config(retries={'max_attempts': BOTO3_RETRIES}))
+    def __init__(self, ec2=None, config=None):
+        self.ec2 = ec2 or boto3.client('ec2', config=config)
 
     @staticmethod
     def get_ami_sorting_key(ami):
@@ -253,7 +252,6 @@ class AMICleaner(object):
         list by preserving a given number of them (history) based on creation
         time and rotation_strategy param
         """
-
         result_amis = []
         result_amis.extend(mapped_candidates_ami)
 

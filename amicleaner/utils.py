@@ -8,7 +8,7 @@ import argparse
 
 from prettytable import PrettyTable
 
-from .resources.config import KEEP_PREVIOUS, AMI_MIN_DAYS
+from .resources.config import KEEP_PREVIOUS, AMI_MIN_DAYS, AWS_REGION
 
 
 class Printer(object):
@@ -163,6 +163,12 @@ def parse_args(args):
                         default=AMI_MIN_DAYS,
                         help="Number of days AMI to keep excluding those "
                              "currently being running")
+
+    parser.add_argument("--aws-region",
+                        dest='aws_region',
+                        type=str,
+                        default=AWS_REGION,
+                        help="AWS Region")
 
     parsed_args = parser.parse_args(args)
     if parsed_args.mapping_key and not parsed_args.mapping_values:

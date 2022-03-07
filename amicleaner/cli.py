@@ -7,11 +7,12 @@ from builtins import input
 from builtins import object
 import sys
 
+from botocore.config import Config
 from amicleaner import __version__
 from .core import AMICleaner, OrphanSnapshotCleaner
 from .fetch import Fetcher
 from .resources.config import MAPPING_KEY, MAPPING_VALUES, EXCLUDED_MAPPING_VALUES
-from .resources.config import TERM
+from .resources.config import TERM, BOTO3_RETRIES
 from .utils import Printer, parse_args
 
 
@@ -29,12 +30,17 @@ class App(object):
         self.full_report = args.full_report
         self.force_delete = args.force_delete
         self.ami_min_days = args.ami_min_days
+        self.aws_region = args.aws_region
 
         self.mapping_strategy = {
             "key": self.mapping_key,
             "values": self.mapping_values,
             "excluded": self.excluded_mapping_values,
         }
+
+    @property
+    def aws_config(self):
+        return Config(retries={'max_attempts': BOTO3_RETRIES}, region_name=self.aws_region)
 
     def fetch_candidates(self, available_amis=None, excluded_amis=None):
 
@@ -43,7 +49,7 @@ class App(object):
         AMIs from ec2 instances, launch configurations, autoscaling groups
         and returns unused AMIs.
         """
-        f = Fetcher()
+        f = Fetcher(config=self.aws_config)
 
         available_amis = available_amis or f.fetch_available_amis()
         excluded_amis = excluded_amis or []
@@ -96,7 +102,8 @@ class App(object):
         if not candidates_amis:
             return None
 
-        c = AMICleaner()
+        
+        c = AMICleaner(config=self.aws_config)
 
         mapped_amis = c.map_candidates(
             candidates_amis=candidates_amis,
@@ -140,10 +147,10 @@ class App(object):
             print(TERM.bold("\nCleaning from {} AMI id(s) ...".format(
                 len(candidates))
             ))
-            failed = AMICleaner().remove_amis_from_ids(candidates)
+            failed = AMICleaner(config=self.aws_config).remove_amis_from_ids(candidates)
         else:
             print(TERM.bold("\nCleaning {} AMIs ...".format(len(candidates))))
-            failed = AMICleaner().remove_amis(candidates)
+            failed = AMICleaner(config=self.aws_config).remove_amis(candidates)
 
         if failed:
             print(TERM.red("\n{0} failed snapshots".format(len(failed))))
@@ -153,7 +160,7 @@ class App(object):
 
         """ Find and removes orphan snapshots """
 
-        cleaner = OrphanSnapshotCleaner()
+        cleaner = OrphanSnapshotCleaner(config=self.aws_config)
         snaps = cleaner.fetch()
 
         if not snaps:
