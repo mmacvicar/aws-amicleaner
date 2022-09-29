@@ -116,11 +116,9 @@ class Fetcher(object):
         # This does not support multiple versions of the same launch template being used
         zeroed_lts = [asg.get("LaunchTemplate", {})
                       for asg in resp.get("AutoScalingGroups", [])
-                      if asg.get("DesiredCapacity", 0) == 0]
-
+                      if asg.get("DesiredCapacity", 0) == 0 and "LaunchTemplate" in asg]
         zeroed_lt_names = [lt.get("LaunchTemplateName", "")
                         for lt in zeroed_lts]
-
         zeroed_lt_versions = [lt.get("LaunchTemplateVersion", "")
                         for lt in zeroed_lts]
 
