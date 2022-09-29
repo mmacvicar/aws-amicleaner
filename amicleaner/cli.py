@@ -93,7 +93,7 @@ class App(object):
                       if k not in excluded_amis]
         return candidates
 
-    def prepare_candidates(self, candidates_amis=None)
+    def prepare_candidates(self, candidates_amis=None):
 
         """ From an AMI list apply mapping strategy and filters """
 
