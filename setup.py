@@ -11,7 +11,7 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-install_requirements = ['awscli', 'argparse', 'boto',
+install_requirements = ['argparse', 'boto',
                         'boto3', 'prettytable', 'blessings']
 
 test_requirements = ['moto', 'pytest', 'pytest-pep8', 'pytest-cov']

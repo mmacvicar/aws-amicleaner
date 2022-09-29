@@ -1,4 +1,3 @@
-awscli
 argparse
 boto
 boto3
